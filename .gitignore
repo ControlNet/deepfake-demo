@@ -373,3 +373,4 @@ out
 !services/rtvc/samples/*.wav
 !services/efficient-vit/samples/*.mp4
 !public/*
+!/prepare_backend_env.sh
