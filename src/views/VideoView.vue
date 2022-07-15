@@ -112,6 +112,10 @@ const videoIsGenerated = computed(() => {
   return generatedVideoUrl.value !== ""
 })
 
+const option = {
+  controls: ["play"]
+}
+
 </script>
 
 <template>
@@ -147,8 +151,8 @@ const videoIsGenerated = computed(() => {
     <h2>Step 3: Generate lip-synced video</h2>
     <b-button class="m-2" variant="primary" @click="generate">Generate</b-button>
     <div v-if="videoIsGenerated" id="video-in-wav2lip">
-      <vue-plyr>
-        <video controls crossorigin playsinline>
+      <vue-plyr :options="option">
+        <video>
           <source :src="generatedVideoUrl" type="video/mp4" />
         </video>
       </vue-plyr>

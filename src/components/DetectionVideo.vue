@@ -41,13 +41,17 @@ const probColor = computed(() => {
 const probClass = computed(() => probColor.value)
 const probStr = computed(() => props?.prob ?? "N/A")
 
+const option = {
+  controls: ["play"]
+}
+
 </script>
 
 <template>
   <b-card class="text-center">
     <b-card-text>
-      <vue-plyr>
-        <video controls crossorigin playsinline>
+      <vue-plyr :options="option">
+        <video>
           <source :src="videoUrl" type="video/mp4"/>
         </video>
       </vue-plyr>
