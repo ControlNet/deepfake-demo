@@ -374,3 +374,5 @@ out
 !services/efficient-vit/samples/*.mp4
 !public/*
 !/prepare_backend_env.sh
+
+services/rtvc/recorded

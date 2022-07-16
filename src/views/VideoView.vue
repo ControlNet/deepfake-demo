@@ -5,6 +5,7 @@ import { useSelectedFileStore } from "@/stores/selectedFile";
 import { BButton } from "bootstrap-vue-3";
 import type { AudListJson, FaceListJson } from "@/index";
 import WaveSurfer from "wavesurfer.js";
+import Recorder from "@/components/Recorder.vue";
 
 
 const globalSelectedFiles = useSelectedFileStore()
@@ -54,23 +55,23 @@ function updateWaveformRef(): void {
 }
 
 const generatedAudio: Ref<string> = ref(globalSelectedFiles.selectedGenAudio)
-const recordedAudio: Ref<string> = ref(globalSelectedFiles.selectedRecAudio)
 const generatedVideo: Ref<string> = ref(globalSelectedFiles.selectedGenVideo)
 
 const playRef = () => wavRef.value?.playPause()
 const pauseRef = () => wavRef.value?.pause()
 
-onMounted(() => {
-  fetch("http://localhost:7112/api/face_list")
+onMounted(async () => {
+  const taskGetFaces = fetch("http://localhost:7112/api/face_list")
       .then(async res => await res.json() as FaceListJson)
       .then(json => json.faces)
       .then(faces => faceFiles.push(...faces))
 
-  fetch("http://localhost:7111/api/aud_list")
+  const taskGetAudios = fetch("http://localhost:7111/api/aud_list")
       .then(async res => await res.json() as AudListJson)
       .then(json => json.audios)
       .then(audios => wavFiles.push(...audios))
 
+  await Promise.all([taskGetFaces, taskGetAudios])
   if (refImageSelected.value) {
     updateWaveformRef()
   }
@@ -136,10 +137,11 @@ const option = {
             @change="updateWaveformRef">
       <option selected>Select an audio</option>
       <option v-if="globalSelectedFiles.hasGenAudio" :value="generatedAudio">Generated Audio</option>
-      <option v-if="globalSelectedFiles.hasRecAudio" :value="recordedAudio">Recorded Audio</option>
+      <option v-if="globalSelectedFiles.hasRecAudio" :value="globalSelectedFiles.selectedRecAudio">Recorded Audio
+      </option>
       <option v-for="wavFile in wavFiles" :value="wavFile">{{ wavFile.slice(8) }}</option>
     </select>
-    <b-button class="m-2 d-inline-block" style="display: flex" variant="danger">Record</b-button>
+    <Recorder/>
     <div id="waveform-ref" class="w-50"/>
     <div v-if="wavRef !== null">
       <b-button class="m-2" variant="success" @click="playRef">Play</b-button>
@@ -153,7 +155,7 @@ const option = {
     <div v-if="videoIsGenerated" id="video-in-wav2lip">
       <vue-plyr :options="option">
         <video>
-          <source :src="generatedVideoUrl" type="video/mp4" />
+          <source :src="generatedVideoUrl" type="video/mp4"/>
         </video>
       </vue-plyr>
     </div>

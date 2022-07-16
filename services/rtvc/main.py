@@ -1,11 +1,12 @@
+import glob
+import os
 import time
+from asyncio import subprocess
 from pathlib import Path
 
-from fastapi import FastAPI
+from fastapi import FastAPI, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import PlainTextResponse, Response, JSONResponse
-import glob
-
 from starlette.staticfiles import StaticFiles
 
 from run_rtvc import load_models, run_voice_cloning
@@ -49,6 +50,26 @@ async def get_audio_list() -> Response:
     return JSONResponse({
         "audios": [f.replace("\\", "/") for f in aud_list]
     }, 200)
+
+
+@app.post("/api/upload")
+async def upload_audio_blob(file: UploadFile) -> Response:
+    Path("recorded").mkdir(exist_ok=True)
+    save_path = f"recorded/{str(int(time.time()))[-10:]}.webm"
+    with open(save_path, "wb") as f:
+        f.write(await file.read())
+    wav_file = await convert_to_wav(save_path)
+    os.remove(save_path)
+    return JSONResponse({"file_name": wav_file}, 200)
+
+
+async def convert_to_wav(webm_file: str):
+    wav_file = webm_file.replace(".webm", ".wav")
+    # convert webm to wav with 16000 sample rate
+    ffmpeg_command = f"ffmpeg -i {webm_file} -ac 1 -ar 16000 {wav_file}"
+    p = await subprocess.create_subprocess_shell(ffmpeg_command)
+    await p.wait()
+    return wav_file
 
 
 if __name__ == '__main__':

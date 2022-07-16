@@ -6,6 +6,7 @@ import { BButton, BFormTextarea } from "bootstrap-vue-3";
 import { useSelectedFileStore } from "@/stores/selectedFile";
 import type { ReactiveVariable } from "vue/macros";
 import type { AudListJson } from "@/index";
+import Recorder from "@/components/Recorder.vue";
 
 const wavFiles: ReactiveVariable<string[]> = reactive([])
 const globalSelectedFiles = useSelectedFileStore()
@@ -45,6 +46,7 @@ function generate() {
       .then(text => generatedAudio.value = text)
       .then(updateWaveformGenerated)
 }
+
 let wavGen: Ref<WaveSurfer | null> = ref(null);
 
 function updateWaveformGenerated(): void {
@@ -65,9 +67,9 @@ const playGen = () => wavGen.value?.playPause()
 const pauseGen = () => wavGen.value?.pause()
 
 // init page
-onMounted(() => {
+onMounted(async () => {
 
-  fetch("http://localhost:7111/api/aud_list")
+  await fetch("http://localhost:7111/api/aud_list")
       .then(async res => await res.json() as AudListJson)
       .then(json => json.audios)
       .then(audios => wavFiles.push(...audios))
@@ -87,6 +89,11 @@ onUnmounted(() => {
   globalSelectedFiles.setSelectedRefAudio(selectedRefAudio.value)
   globalSelectedFiles.setSelectedGenAudio(generatedAudio.value)
 })
+
+function onTextChanged() {
+  globalSelectedFiles.setInputText(inputText.value)
+}
+
 </script>
 
 <template>
@@ -95,9 +102,12 @@ onUnmounted(() => {
     <select class="form-select w-25 d-inline-block" aria-label="Default select example" v-model="selectedRefAudio"
             @change="updateWaveformRef">
       <option selected>Select a pre-recorded audio</option>
+      <option v-if="globalSelectedFiles.hasRecAudio" :value="globalSelectedFiles.selectedRecAudio">
+        Recorded Audio
+      </option>
       <option v-for="wavFile in wavFiles" :value="wavFile">{{ wavFile.slice(8) }}</option>
     </select>
-    <b-button class="m-2 d-inline-block" style="display: flex" variant="danger">Record</b-button>
+    <Recorder/>
     <div id="waveform-ref" class="w-50"/>
     <div v-if="wavRef !== null">
       <b-button class="m-2" variant="success" @click="playRef">Play</b-button>
@@ -111,7 +121,8 @@ onUnmounted(() => {
         v-model="inputText"
         placeholder="Input some text here..."
         rows="5"
-        max-rows="5"/>
+        max-rows="5"
+        @change="onTextChanged"/>
   </section>
   <section class="p-2" v-if="inputText !== '' || wavGen !== null">
     <h2>Step 3: Generate audio</h2>
