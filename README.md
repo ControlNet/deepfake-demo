@@ -10,6 +10,7 @@ Requirements:
 
 ```bash
 npm i
+conda init bash
 # build with CUDA (>= 11.3)
 bash -i ./prepare_env_cuda113.sh
 # build with CPU
@@ -42,5 +43,5 @@ python main.py
 ## Run web server
 
 ```bash
-vite
+npm run dev
 ```
