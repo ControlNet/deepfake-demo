@@ -373,6 +373,7 @@ out
 !services/rtvc/samples/*.wav
 !services/efficient-vit/samples/*.mp4
 !public/*
-!/prepare_backend_env.sh
+!/prepare_env_cuda113.sh
+!/prepare_env_cpu.sh
 
 services/rtvc/recorded

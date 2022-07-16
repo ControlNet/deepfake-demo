@@ -1,11 +1,8 @@
-import time
-from pathlib import Path
+import glob
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import PlainTextResponse, Response, JSONResponse
-import glob
-
 from starlette.staticfiles import StaticFiles
 
 from inference import run_inference
@@ -28,7 +25,7 @@ config_file = "configs/architecture.yaml"
 @app.get("/api/detect")
 async def detect_deepfake(video) -> Response:
     try:
-        confidence = str(float(run_inference(video, config_file, 0, checkpoint_path, 30)))
+        confidence = str(float(run_inference(video, config_file, 0, checkpoint_path, 30, device)))
         return PlainTextResponse(confidence, 200)
     except Exception as e:
         import traceback
@@ -46,5 +43,10 @@ async def get_real_samples() -> Response:
 
 if __name__ == '__main__':
     import uvicorn
+    import argparse
+    # add flag to run on cuda
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--cuda", action="store_true", help="run on cuda, default CPU")
+    device = "cpu" if parser.parse_args().cuda is False else "cuda"
 
     uvicorn.run(app, port=7113)

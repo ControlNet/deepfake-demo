@@ -6,12 +6,14 @@ Requirements:
 
 - conda
 - nodejs
-- GPU (CUDA >= 11.3)
 
 
 ```bash
 npm i
-bash -i ./prepare_backend_env.sh
+# build with CUDA (>= 11.3)
+bash -i ./prepare_env_cuda113.sh
+# build with CPU
+bash -i ./prepare_env_cpu.sh
 ```
 
 ## Run backend services
@@ -31,6 +33,9 @@ python main.py
 ```bash
 conda activate deepfake_demo
 cd services/efficient-vit
+# run with CUDA (>= 11.3)
+python main.py --cuda
+# run with CPU
 python main.py
 ```
 

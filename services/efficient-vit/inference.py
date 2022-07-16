@@ -47,7 +47,7 @@ def read_video(video_path, frames_per_video, config):
 _model = None
 
 
-def get_or_load_model(model_path, config, efficient_net):
+def get_or_load_model(model_path, config, efficient_net, device="cuda"):
     global _model
     if _model is None:
         if efficient_net == 0:
@@ -59,22 +59,22 @@ def get_or_load_model(model_path, config, efficient_net):
             _model = EfficientViT(config=config, channels=channels, selected_efficient_net=efficient_net)
             _model.load_state_dict(torch.load(model_path))
             _model.eval()
-            _model.cuda()
+            _model.to(device)
         else:
             raise ValueError("No model found.")
     return _model
 
 
-def run_inference(video_path, config_file, efficient_net, model_path, frames_per_video):
+def run_inference(video_path, config_file, efficient_net, model_path, frames_per_video, device="cuda"):
     with open(config_file, 'r') as ymlfile:
         config = yaml.safe_load(ymlfile)
 
-    model = get_or_load_model(model_path, config, efficient_net)
+    model = get_or_load_model(model_path, config, efficient_net, device)
     frames = read_video(video_path, frames_per_video, config)
 
     frames = np.transpose(frames, (0, 3, 1, 2))  # (B, C, H, W)
 
-    x = torch.tensor(frames).cuda().float()
+    x = torch.tensor(frames).float().to(device)
     with torch.no_grad():
         pred = model(x).sigmoid().mean().cpu().numpy()
     return pred
