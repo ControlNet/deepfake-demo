@@ -8,6 +8,7 @@ export const useSelectedFileStore = defineStore({
         selectedRecAudio: "",
         selectedRefWav2LipSpeech: "Select an audio",
         selectedGenVideo: "",
+        selectedRecVideo: "",
         selectedRefImage: "Select a reference face",
         inputText: ""
     }),
@@ -15,6 +16,7 @@ export const useSelectedFileStore = defineStore({
         hasGenAudio: state => state.selectedGenAudio !== "",
         hasRecAudio: state => state.selectedRecAudio !== "",
         hasGenVideo: state => state.selectedGenVideo !== "",
+        hasRecVideo: state => state.selectedRecVideo !== "",
     },
     actions: {
         setSelectedRefAudio(value: string) {
@@ -34,6 +36,9 @@ export const useSelectedFileStore = defineStore({
         },
         setSelectedGenVideo(value: string) {
             this.selectedGenVideo = value
+        },
+        setSelectedRecVideo(value: string) {
+            this.selectedRecVideo = value
         },
         setInputText(value: string) {
             this.inputText = value

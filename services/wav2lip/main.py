@@ -1,7 +1,8 @@
 import time
 from pathlib import Path
 
-from fastapi import FastAPI
+import cv2
+from fastapi import FastAPI, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import PlainTextResponse, Response, JSONResponse
 import glob
@@ -45,6 +46,36 @@ async def get_face_list() -> Response:
     return JSONResponse({
         "faces": [f.replace("\\", "/") for f in face_list]
     }, 200)
+
+
+@app.post("/api/upload")
+async def upload_image_blob(file: UploadFile) -> Response:
+    Path("recorded").mkdir(exist_ok=True)
+    save_path = f"recorded/{str(int(time.time()))[-10:]}.png"
+    with open(save_path, "wb") as f:
+        f.write(await file.read())
+    crop_face(save_path)
+    return JSONResponse({"file_name": save_path}, 200)
+
+
+face_cascade = None
+
+
+def crop_face(save_path: str):
+    global face_cascade
+    if face_cascade is None:
+        face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
+
+    img = cv2.imread(save_path)
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    faces = face_cascade.detectMultiScale(gray, 1.05, 5)
+    x, y, w, h = faces[0]
+    center_x = x + w / 2
+    center_y = y + h / 2
+    side = max(w, h) * 1.5
+    cropped = img[int(center_y - side / 2):int(center_y + side / 2), int(center_x - side / 2):int(center_x + side / 2)]
+    resized = cv2.resize(cropped, (224, 224))
+    cv2.imwrite(save_path, resized)
 
 
 if __name__ == '__main__':

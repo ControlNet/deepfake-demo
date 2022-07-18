@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { BButton, BCard, BCardText } from "bootstrap-vue-3";
+import { BCard, BCardText } from "bootstrap-vue-3";
 import { computed } from "vue";
 
 interface Props {

@@ -125,8 +125,10 @@ const option = {
     <select class="form-select w-25 d-inline-block" aria-label="Default select example" v-model="selectedRefImage"
             @change="updateSelectedImage">
       <option selected>Select a reference face</option>
+      <option v-if="globalSelectedFiles.hasRecVideo" :value="globalSelectedFiles.selectedRecVideo">Recorded Face</option>
       <option v-for="faceFile in faceFiles" :value="faceFile">{{ faceFile.slice(8) }}</option>
     </select>
+    <Recorder type="video"/>
     <p/>
     <img :src="selectedRefImageUrl" alt="" v-if="refImageSelected" style="width: 150px">
   </section>
@@ -141,7 +143,7 @@ const option = {
       </option>
       <option v-for="wavFile in wavFiles" :value="wavFile">{{ wavFile.slice(8) }}</option>
     </select>
-    <Recorder/>
+    <Recorder type="audio"/>
     <div id="waveform-ref" class="w-50"/>
     <div v-if="wavRef !== null">
       <b-button class="m-2" variant="success" @click="playRef">Play</b-button>

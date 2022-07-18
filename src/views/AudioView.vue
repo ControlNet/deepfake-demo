@@ -107,7 +107,7 @@ function onTextChanged() {
       </option>
       <option v-for="wavFile in wavFiles" :value="wavFile">{{ wavFile.slice(8) }}</option>
     </select>
-    <Recorder/>
+    <Recorder type="audio"/>
     <div id="waveform-ref" class="w-50"/>
     <div v-if="wavRef !== null">
       <b-button class="m-2" variant="success" @click="playRef">Play</b-button>
