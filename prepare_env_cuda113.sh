@@ -10,7 +10,7 @@ pip install fastapi==0.78.0 starlette==0.19.1 scipy==1.8.1 uvicorn==0.18.2 libro
 
 # download pretrained models
 wget -O services/rtvc/pretrained_models.zip https://github.com/ControlNet/deepfake-demo/releases/download/rtvc_model/pretrained.zip
-unzip services/rtvc/pretrained_models.zip -d services/rtvc
+unzip -o services/rtvc/pretrained_models.zip -d services/rtvc
 
 wget -O services/wav2lip/wav2lip_gan.pth https://github.com/ControlNet/deepfake-demo/releases/download/wav2lip_model/wav2lip_gan.pth
 wget -O services/efficient-vit/efficient_vit.pth https://github.com/ControlNet/deepfake-demo/releases/download/efficientvit_model/efficient_vit.pth
