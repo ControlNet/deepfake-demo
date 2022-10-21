@@ -1,4 +1,5 @@
 import time
+import os
 from pathlib import Path
 
 import cv2
@@ -29,6 +30,7 @@ checkpoint_path = "wav2lip_gan.pth"
 async def generate_video(face: str, audio: str) -> Response:
     Path("out").mkdir(exist_ok=True)
     output_video = f"out/{str(int(time.time()))[-10:]}.mp4"
+    audio = f"{os.environ['RTVC_URL']}/static/{audio}"
     try:
         run_wav2lip(face, fps=30, resize_factor=1, rotate=False, crop=[0, -1, 0, -1], audio_file=audio,
             sample_rate=16000, checkpoint_path=checkpoint_path, outfile=output_video, box=[-1, -1, -1, -1],
@@ -81,4 +83,4 @@ def crop_face(save_path: str):
 if __name__ == '__main__':
     import uvicorn
 
-    uvicorn.run(app, port=7112)
+    uvicorn.run(app, port=7112, host="0.0.0.0")

@@ -160,16 +160,16 @@ class EfficientViT(nn.Module):
             image = im.cpu().detach().numpy()
             image = np.transpose(image, (1,2,0))
             cv2.imwrite("images/image"+str(randint(0,1000))+".png", image)
-        
+
         x_scaled = []
         for idx, im in enumerate(x):
             im = im.cpu().detach().numpy()
             for patch_idx, patch in enumerate(im):
-                patch = (255*(patch - np.min(patch))/np.ptp(patch)) 
+                patch = (255*(patch - np.min(patch))/np.ptp(patch))
                 im[patch_idx] = patch
                 #cv2.imwrite("patches/patches_"+str(idx)+"_"+str(patch_idx)+".png", patch)
             x_scaled.append(im)
-        x = torch.tensor(x_scaled).cuda()   
+        x = torch.tensor(x_scaled).cuda()
         '''
 
         # x2 = self.features(img)

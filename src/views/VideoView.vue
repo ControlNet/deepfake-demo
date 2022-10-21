@@ -87,7 +87,7 @@ function updateSelectedImage() {
 
 function generate() {
   generatedVideo.value = ""
-  fetch(`http://localhost:7112/api/run_wav2lip?face=${selectedRefImage.value}&audio=../rtvc/${selectedRefAudio.value}`, {
+  fetch(`http://localhost:7112/api/run_wav2lip?face=${selectedRefImage.value}&audio=${selectedRefAudio.value}`, {
     headers: {
       "Content-Type": "text/plain"
     }

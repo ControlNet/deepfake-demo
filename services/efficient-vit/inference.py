@@ -1,6 +1,7 @@
 import argparse
 import glob
 import os
+import io
 
 import cv2
 import numpy as np
@@ -57,7 +58,7 @@ def get_or_load_model(model_path, config, efficient_net, device="cuda"):
 
         if os.path.exists(model_path):
             _model = EfficientViT(config=config, channels=channels, selected_efficient_net=efficient_net)
-            _model.load_state_dict(torch.load(model_path))
+            _model.load_state_dict(torch.load(model_path, map_location=torch.device('cpu')))
             _model.eval()
             _model.to(device)
         else:

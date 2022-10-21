@@ -1,4 +1,7 @@
 import glob
+import os
+import pathlib
+from urllib.request import urlopen
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -24,6 +27,13 @@ config_file = "configs/architecture.yaml"
 
 @app.get("/api/detect")
 async def detect_deepfake(video) -> Response:
+    video = video.replace("../wav2lip", os.environ["WAV2LIP_URL"] + "/static")
+    if video.startswith("https://") or video.startswith("http://"):
+        # download the video file from URL
+        stream = urlopen(video).read()
+        video = "temp.mp4"
+        pathlib.Path(video).write_bytes(stream)
+
     try:
         confidence = str(float(run_inference(video, config_file, 0, checkpoint_path, 30, device)))
         return PlainTextResponse(confidence, 200)
@@ -49,4 +59,4 @@ if __name__ == '__main__':
     parser.add_argument("--cuda", action="store_true", help="run on cuda, default CPU")
     device = "cpu" if parser.parse_args().cuda is False else "cuda"
 
-    uvicorn.run(app, port=7113)
+    uvicorn.run(app, port=7113, host="0.0.0.0")

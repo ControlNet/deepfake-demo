@@ -1,3 +1,7 @@
+from urllib.request import urlopen
+import soundfile as sf
+import io
+import pathlib
 import librosa
 import librosa.filters
 import numpy as np
@@ -7,6 +11,10 @@ from scipy.io import wavfile
 from hparams import hparams as hp
 
 def load_wav(path, sr):
+    if path.startswith("https://") or path.startswith("http://"):
+        z = io.BytesIO(urlopen(path).read())
+        return librosa.load(z, sr=sr)[0]
+
     return librosa.core.load(path, sr=sr)[0]
 
 def save_wav(wav, path, sr):
@@ -37,7 +45,7 @@ def get_hop_size():
 def linearspectrogram(wav):
     D = _stft(preemphasis(wav, hp.preemphasis, hp.preemphasize))
     S = _amp_to_db(np.abs(D)) - hp.ref_level_db
-    
+
     if hp.signal_normalization:
         return _normalize(S)
     return S
@@ -45,7 +53,7 @@ def linearspectrogram(wav):
 def melspectrogram(wav):
     D = _stft(preemphasis(wav, hp.preemphasis, hp.preemphasize))
     S = _amp_to_db(_linear_to_mel(np.abs(D))) - hp.ref_level_db
-    
+
     if hp.signal_normalization:
         return _normalize(S)
     return S
@@ -114,7 +122,7 @@ def _normalize(S):
                            -hp.max_abs_value, hp.max_abs_value)
         else:
             return np.clip(hp.max_abs_value * ((S - hp.min_level_db) / (-hp.min_level_db)), 0, hp.max_abs_value)
-    
+
     assert S.max() <= 0 and S.min() - hp.min_level_db >= 0
     if hp.symmetric_mels:
         return (2 * hp.max_abs_value) * ((S - hp.min_level_db) / (-hp.min_level_db)) - hp.max_abs_value
@@ -129,7 +137,7 @@ def _denormalize(D):
                     + hp.min_level_db)
         else:
             return ((np.clip(D, 0, hp.max_abs_value) * -hp.min_level_db / hp.max_abs_value) + hp.min_level_db)
-    
+
     if hp.symmetric_mels:
         return (((D + hp.max_abs_value) * -hp.min_level_db / (2 * hp.max_abs_value)) + hp.min_level_db)
     else:

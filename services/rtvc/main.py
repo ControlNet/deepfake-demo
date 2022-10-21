@@ -75,4 +75,4 @@ async def convert_to_wav(webm_file: str):
 if __name__ == '__main__':
     import uvicorn
 
-    uvicorn.run(app, port=7111)
+    uvicorn.run(app, port=7111, host="0.0.0.0")

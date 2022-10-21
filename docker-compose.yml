@@ -1,0 +1,40 @@
+services:
+  rtvc:
+    container_name: "deepfake-demo-rtvc"
+    build: ./services/rtvc
+    image: "controlnet/deepfake-demo-rtvc"
+    ports:
+      - "7111:7111"
+
+  wav2lip:
+    container_name: "deepfake-demo-wav2lip"
+    build: ./services/wav2lip
+    image: "controlnet/deepfake-demo-wav2lip"
+    ports:
+      - "7112:7112"
+    environment:
+      - "RTVC_URL=http://rtvc:7111"
+    depends_on:
+      - rtvc
+
+  efficient-vit:
+    container_name: "deepfake-demo-efficient-vit"
+    build: ./services/efficient-vit
+    image: "controlnet/deepfake-demo-efficient-vit"
+    ports:
+      - "7113:7113"
+    environment:
+      - "WAV2LIP_URL=http://wav2lip:7112"
+    depends_on:
+      - wav2lip
+
+  web:
+    container_name: "deepfake-demo-web"
+    build: .
+    image: "controlnet/deepfake-demo-web"
+    ports:
+      - "3000:3000"
+    depends_on:
+      - rtvc
+      - wav2lip
+      - efficient-vit

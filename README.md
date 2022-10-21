@@ -1,6 +1,15 @@
 # deepfake-demo
 
-## Prepare environment
+
+## Run with Docker
+
+```bash
+docker-compose up
+```
+
+## Run from source
+
+### Prepare environment
 
 Requirements:
 
@@ -17,7 +26,7 @@ bash -i ./prepare_env_cuda113.sh
 bash -i ./prepare_env_cpu.sh
 ```
 
-## Run backend services
+### Run backend services
 
 ```bash
 conda activate deepfake_demo
@@ -40,7 +49,7 @@ python main.py --cuda
 python main.py
 ```
 
-## Run web server
+### Run web server
 
 ```bash
 npm run dev
