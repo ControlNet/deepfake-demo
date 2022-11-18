@@ -1,9 +1,17 @@
 # deepfake-demo
 
 
-## Run with Docker
+## Run with Docker with prebuilt image
+```bash
+wget https://raw.githubusercontent.com/ControlNet/deepfake-demo/compose/docker-compose.yml
+docker compose up
+```
+
+## Run with Docker built from source
 
 ```bash
+git clone https://github.com/ControlNet/deepfake-demo.git
+cd deepfake-demo
 docker-compose up
 ```
 
