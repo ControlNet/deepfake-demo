@@ -3,7 +3,7 @@ FROM python:3.9
 WORKDIR /app
 
 # Install system dependencies
-RUN apt update && apt install --no-install-recommends -y wget unzip libsndfile1
+RUN apt update && apt install --no-install-recommends -y wget unzip libsndfile1 ffmpeg
 
 # Install pip dependencies
 RUN pip install torch==1.11.0+cpu torchaudio --extra-index-url https://download.pytorch.org/whl/cpu
